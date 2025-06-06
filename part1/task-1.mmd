@@ -1,41 +1,64 @@
-%%This is a Diagram example for Task 0
-
-%%Diagram type
-
 classDiagram
+    %% BaseEntity for UUID and audit fields
+    class BaseEntity {
+        -id: UUID
+        -created_at: datetime
+        -updated_at: datetime
+    }
 
-%%Nodes and Contents
+    %% User
+    class User {
+        -first_name: str
+        -last_name: str
+        -email: str
+        -password: str
+        -is_admin: bool
+        +register(): void
+        +update_profile(): void
+        +delete(): void
+    }
 
+    %% Place
+    class Place {
+        -title: str
+        -description: str
+        -price: float
+        -latitude: float
+        -longitude: float
+        +create(): void
+        +update(): void
+        +delete(): void
+        +list(): List<Place>
+    }
 
-class PresentationLayer {
+    %% Review
+    class Review {
+        -rating: int
+        -comment: str
+        +create(): void
+        +update(): void
+        +delete(): void
+        +list_by_place(place_id: UUID): List<Review>
+    }
 
-+UserService
-+PlaceService
-+ReviewService
-+AmenityService
-}
-class HBnBFacade {
-+createUser()
-+getPlaceDetails()
-+submitReview()
-+listAmenities()
-}
-class BusinessLogicLayer {
-    +User
-    +Place
-    +Review
-    +Amenity
-}
-class PersistenceLayer {
-+UserRepository
-+PlaceRepository
-+ReviewRepository
-+AmenityRepository
-}
+    %% Amenity
+    class Amenity {
+        -name: str
+        -description: str
+        +create(): void
+        +update(): void
+        +delete(): void
+        +list(): List<Amenity>
+    }
 
+    %% Inheritance
+    User --|> BaseEntity
+    Place --|> BaseEntity
+    Review --|> BaseEntity
+    Amenity --|> BaseEntity
 
-%%Element Display order and line labels
-
-PresentationLayer --> HBnBFacade : uses
-HBnBFacade --> BusinessLogicLayer : delegates
-BusinessLogicLayer --> PersistenceLayer : accesses
+    %% Relationships
+    User "1" -- "0..*" Place : owns >
+    Place "1" -- "0..*" Review : receives >
+    User "1" -- "0..*" Review : writes >
+    Place "1" -- "0..*" Amenity : has >

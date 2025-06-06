@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Client
+    participant API as PlaceAPI
+    participant Logic as PlaceService
+    participant Repo as PlaceRepository
+    participant DB
+
+    Client->>API: GET /places?filter=...
+    API->>Logic: get_filtered_places(criteria)
+    Logic->>Repo: query_places(criteria)
+    Repo->>DB: SELECT * FROM places WHERE ...
+    DB-->>Repo: result_set
+    Repo-->>Logic: place_list
+    Logic-->>API: return place DTOs
+    API-->>Client: 200 OK (list of places)

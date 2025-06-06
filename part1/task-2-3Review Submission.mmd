@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant Client
+    participant API as ReviewAPI
+    participant Logic as ReviewService
+    participant PlaceLogic as PlaceService
+    participant Repo as ReviewRepository
+    participant DB
+
+    Client->>API: POST /reviews (review data)
+    API->>Logic: create_review(data)
+    Logic->>PlaceLogic: validate_place_exists(place_id)
+    PlaceLogic->>Repo: find_place_by_id(place_id)
+    Repo->>DB: SELECT * FROM places WHERE id=place_id
+    DB-->>Repo: place_record
+    Repo-->>PlaceLogic: place_object
+    PlaceLogic-->>Logic: place_validated
+    Logic->>Repo: save_review(review)
+    Repo->>DB: INSERT INTO reviews
+    DB-->>Repo: confirmation
+    Repo-->>Logic: review_created
+    Logic-->>API: success_response
+    API-->>Client: 201 Created (review info)
+
