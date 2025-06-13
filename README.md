@@ -1,12 +1,12 @@
 # HBnB Evolution – Technical Documentation
 
-## 📘 Overview
+##  Overview
 
 This repository contains the technical documentation for the **HBnB Evolution** project – a simplified AirBnB-like application. The goal of this documentation is to provide a clear and structured foundation for the system's design, covering architecture, business logic, and key interactions.
 
 ---
 
-## 📌 Objective
+##  Objective
 
 The main objective of this phase is to design and document:
 
@@ -19,7 +19,7 @@ This documentation will guide the development process in the upcoming stages.
 
 ---
 
-## 🛠️ Documentation Components
+##  Documentation Components
 
 ### 1. **Architecture Design**
 - A high-level package diagram representing the three-layered architecture:
@@ -49,7 +49,7 @@ This documentation will guide the development process in the upcoming stages.
 
 ---
 
-## 📋 Business Rules Implemented
+##  Business Rules Implemented
 
 - User roles (regular/admin), registration, profile update, and deletion
 - Place creation with amenities, location, and pricing
@@ -59,14 +59,14 @@ This documentation will guide the development process in the upcoming stages.
 
 ---
 
-## 📎 Tools & Notation
+##  Tools & Notation
 
 - All diagrams follow standard **UML notation**
 - Created using [Tool Name – e.g., Lucidchart, Draw.io, etc.] *(Add tool if applicable)*
 
 ---
 
-## ✅ Output
+## Output
 
 The complete documentation serves as a blueprint for the implementation phase and ensures all stakeholders understand the system's structure and logic.
 
