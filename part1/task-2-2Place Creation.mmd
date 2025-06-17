@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant Client
+    participant API as PlaceAPI
+    participant Logic as PlaceService
+    participant UserLogic as UserService
+    participant Repo as PlaceRepository
+    participant DB
+
+    Client->>API: POST /places (place data)
+    API->>Logic: create_place(data)
+    Logic->>UserLogic: get_user(owner_id)
+    UserLogic->>Repo: find_user_by_id(owner_id)
+    Repo->>DB: SELECT * FROM users WHERE id=owner_id
+    DB-->>Repo: user_record
+    Repo-->>UserLogic: user_object
+    UserLogic-->>Logic: user_validated
+    Logic->>Repo: save_place(place)
+    Repo->>DB: INSERT INTO places
+    DB-->>Repo: confirmation
+    Repo-->>Logic: place_created
+    Logic-->>API: success_response
+    API-->>Client: 201 Created (place info)
+

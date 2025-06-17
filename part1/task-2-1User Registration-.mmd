@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Client
+    participant API as UserAPI
+    participant Logic as UserService
+    participant Repo as UserRepository
+    participant DB
+
+    Client->>API: POST /register (user data)
+    API->>Logic: register_user(data)
+    Logic->>Logic: validate(data)
+    Logic->>Repo: save_user(user)
+    Repo->>DB: INSERT INTO users
+    DB-->>Repo: confirmation
+    Repo-->>Logic: user_created
+    Logic-->>API: success_response
+    API-->>Client: 201 Created (user info)
