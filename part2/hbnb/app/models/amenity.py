@@ -1,6 +1,6 @@
-from base_entity import BaseEntity
-class Amenity(BaseEntity):
-    def __init__(self, name):
+from base_entity import BaseModel
+class Amenity(BaseModel):
+    def __init__(self, name:str):
         self.name = name
     def create(self):
         # Logic to create an amenity
