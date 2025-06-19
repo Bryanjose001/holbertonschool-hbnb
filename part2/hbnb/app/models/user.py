@@ -6,6 +6,7 @@ class User(BaseModel):
         self.email = email
         self.password = password
         self.is_admin = is_admin
+        self.places = []
     def register(self):
         # Logic to register the user
         pass
@@ -15,4 +16,6 @@ class User(BaseModel):
     def delete(self):
         # Logic to delete the user
         pass
-
+    def add_place(self, place):
+        """Add a place to the user's list of places."""
+        self.places.append(place)

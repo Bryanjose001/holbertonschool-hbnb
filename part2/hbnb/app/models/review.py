@@ -1,10 +1,12 @@
 from base_entity import BaseModel
+from user import User
+from place import Place
 class Review(BaseModel):
-    def __init__(self, text:str, place:place, rating:int,user:bool=False):
+    def __init__(self, text:str, place:Place, rating:int,user:User):
         self.rating = rating
         self.text = text
         self.place = place 
-        self.user = user 
+        self.user = user
     def create(self):
         # Logic to create a review
         pass
