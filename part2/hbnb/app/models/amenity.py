@@ -1,4 +1,4 @@
-from base_entity import BaseModel
+from hbnb.app.models.base_entity import BaseModel
 class Amenity(BaseModel):
     def __init__(self, name:str):
         self.name = name

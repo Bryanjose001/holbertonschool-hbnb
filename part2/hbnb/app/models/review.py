@@ -1,6 +1,8 @@
-from base_entity import BaseModel
-from user import User
-from place import Place
+from hbnb.app.models.base_entity import BaseModel
+from hbnb.app.models.user import User
+from hbnb.app.models.place import Place
+
+
 class Review(BaseModel):
     def __init__(self, text:str, place:Place, rating:int,user:User):
         self.rating = rating
