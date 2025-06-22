@@ -1,10 +1,10 @@
 from part2.hbnb.app.models.base_entity import BaseModel
 class User(BaseModel):
-    def __init__(self,first_name:str, last_name:str, email:str, password:str,is_admin:bool=False):
+    def __init__(self,first_name:str, last_name:str, email:str,is_admin:bool=False):
+        super().__init__()
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = password
         self.is_admin = is_admin
         self.places = []
     def register(self):
@@ -19,3 +19,4 @@ class User(BaseModel):
     def add_place(self, place):
         """Add a place to the user's list of places."""
         self.places.append(place)
+

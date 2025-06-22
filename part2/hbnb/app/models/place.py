@@ -1,5 +1,5 @@
-from hbnb.app.models.base_entity import BaseModel
-from hbnb.app.models.user import User
+from part2.hbnb.app.models.base_entity import BaseModel
+from part2.hbnb.app.models.user import User
 
 class Place(BaseModel):
     def __init__(self, title:str, description:str,price:str, latitude:float,longitude:float,owner:User):
