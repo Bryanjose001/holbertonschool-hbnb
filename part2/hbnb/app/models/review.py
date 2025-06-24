@@ -1,6 +1,6 @@
-from part2.hbnb.app.models.base_entity import BaseModel
-from part2.hbnb.app.models.user import User
-from part2.hbnb.app.models.place import Place
+from app.models.base_entity import BaseModel
+from app.models.user import User
+from app.models.place import Place
 
 
 class Review(BaseModel):

@@ -1,6 +1,7 @@
-from part2.hbnb.app.models.base_entity import BaseModel
+from app.models.base_entity import BaseModel
 class Amenity(BaseModel):
     def __init__(self, name:str):
+        super().__init__()
         self.name = name
     def create(self):
         # Logic to create an amenity
