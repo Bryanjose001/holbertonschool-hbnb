@@ -1,8 +1,8 @@
 from app.models.base_entity import BaseModel
 class Amenity(BaseModel):
-    def __init__(self, name):
+    def __init__(self, name, description=""):
         super().__init__()
-        self.name = self.validate_name(name)
-
-    def validate_name(self, name):
-        pass
+        if len(name) > 50:
+            raise ValueError("Amenity name must be 50 characters or fewer")
+        self.name = name
+        self.description = description
