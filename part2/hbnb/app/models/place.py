@@ -7,45 +7,91 @@ from app.models.user import User
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
+        self._title = None
+        self._description = None
+        self._price = None
+        self._latitude = None
+        self._longitude = None
+        self._owner = None
+
+        # Use setters to apply validation
         self.title = title
         self.description = description
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+
         self.reviews = []
         self.amenities = []
 
-    def validate_title(self, title):
-        if not title or not isinstance(title, str):
+    # --- Title ---
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        if not value or not isinstance(value, str):
             raise ValueError("Title must be a non-empty string")
-        return title.strip()
+        self._title = value.strip()
 
-    def validate_description(self, description):
-        if not isinstance(description, str):
+    # --- Description ---
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if not isinstance(value, str):
             raise ValueError("Description must be a string")
-        return description.strip()
+        self._description = value.strip()
 
-    def validate_price(self, price):
-        if not isinstance(price, (int, float)) or price < 0:
+    # --- Price ---
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if not isinstance(value, (int, float)) or value < 0:
             raise ValueError("Price must be a non-negative number")
-        return float(price)
+        self._price = float(value)
 
-    def validate_latitude(self, latitude):
-        if not isinstance(latitude, (int, float)) or not (-90 <= latitude <= 90):
-            raise ValueError("Latitude must be a number between -90 and 90")
-        return float(latitude)
+    # --- Latitude ---
+    @property
+    def latitude(self):
+        return self._latitude
 
-    def validate_longitude(self, longitude):
-        if not isinstance(longitude, (int, float)) or not (-180 <= longitude <= 180):
-            raise ValueError("Longitude must be a number between -180 and 180")
-        return float(longitude)
+    @latitude.setter
+    def latitude(self, value):
+        if not isinstance(value, (int, float)) or not (-90 <= value <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        self._latitude = float(value)
 
-    def validate_owner(self, owner: "User"):
-        if not owner or not isinstance(owner, User):
+    # --- Longitude ---
+    @property
+    def longitude(self):
+        return self._longitude
+
+    @longitude.setter
+    def longitude(self, value):
+        if not isinstance(value, (int, float)) or not (-180 <= value <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        self._longitude = float(value)
+
+    # --- Owner ---
+    @property
+    def owner(self):
+        return self._owner
+
+    @owner.setter
+    def owner(self, value):
+        if not value or not isinstance(value, User):
             raise ValueError("Owner must be a valid User instance")
-        return owner
+        self._owner = value
 
+    # --- Review & Amenity Helpers (unchanged) ---
     def add_review(self, review: "Review"):
         if not isinstance(review, Review):
             raise ValueError("Only Review instances can be added")
