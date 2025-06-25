@@ -1,8 +1,6 @@
 from app.models.base_entity import BaseModel
-from app.models.amenity import Amenity
-from app.models.review import Review
 from app.models.user import User
-
+from app.models.review import Review
 
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
