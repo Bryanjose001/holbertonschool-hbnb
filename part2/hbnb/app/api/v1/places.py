@@ -37,8 +37,15 @@ class PlaceList(Resource):
         place_data = api.payload
         # Placeholder for logic to create a new place, including validation and persistence
         try:
-            new_place = facade.create_place(place_data)
-            return {'id': new_place.id, 'title': new_place.title, 'price': new_place.price}, 201
+            new_place = facade.create_place(api.payload)
+            return {
+                'id': new_place.id,     
+                'title': new_place.title, 
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitud':new_place.longitude,
+                'owner_id':new_place.owner.id
+                }, 201
         except Exception as e:
             return {'error': str(e)}, 400
     @api.response(200, 'List of places retrieved successfully')
