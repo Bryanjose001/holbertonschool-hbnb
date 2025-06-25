@@ -2,11 +2,11 @@ from app.models.base_entity import BaseModel
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         super().__init__()
-        self.text = self.validate_comment(text)
-        self.rating = self.validate_rating(rating)
-        self.place = self.validate_place(place)
-        self.user = self.validate_user(user)
-
+        self.text = text
+        self.rating = rating
+        self.place = place
+        self.user = user
+        
     def validate_comment(self, text):
         if not text or not isinstance(text, str):
             raise ValueError("Review text must be a non-empty string")

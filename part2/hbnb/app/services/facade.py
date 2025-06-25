@@ -47,11 +47,32 @@ class HBnBFacade:
         print(vars(amenity))
         self.amenity_repo.update(amenity_id,amenity)
         return amenity
-    def create_place(self, place_data):
-        place = Place(**place_data)
-        self.place_repo.add(place)
-        return place
+    def create_place(self, data):
+        owner_id = data.get('owner_id')
 
+        if not owner_id:
+            raise ValueError("owner_id is required")
+
+        # Step 1: Lookup User by ID using user_repo
+        owner = self.user_repo.get(owner_id)
+
+        if not owner:
+            raise ValueError(f"User with id '{owner_id}' not found")
+
+            # Step 2: Create the Place object
+        new_place = Place(
+            title=data.get('title'),
+            description=data.get('description'),
+            price=data.get('price'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            owner=owner
+        )
+
+        # Step 3: Add to the place repository
+        self.place_repo.add(new_place)
+
+        return new_place
     def get_place(self, place_id):
         return self.place_repo.get(place_id)
 
