@@ -36,9 +36,11 @@ class PlaceList(Resource):
         """Register a new place"""
         place_data = api.payload
         # Placeholder for logic to create a new place, including validation and persistence
-        new_place = facade.create_place(place_data)
-        return {'id': new_place.id, 'title': new_place.title, 'price': new_place.price}, 201
-    
+        try:
+            new_place = facade.create_place(place_data)
+            return {'id': new_place.id, 'title': new_place.title, 'price': new_place.price}, 201
+        except Exception as e:
+            return {'error': str(e)}, 400
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
@@ -56,6 +58,8 @@ class PlaceList(Resource):
             },
             'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in place.amenities]
         } for place in places], 200
+    
+
     
 
 @api.route('/<place_id>')
