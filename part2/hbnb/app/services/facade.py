@@ -89,8 +89,35 @@ class HBnBFacade:
         return place
     
     def create_review(self, review_data):
-        review = Review(**review_data)
+        place_id = review_data.get('place_id')
+        user_id = review_data.get('user_id')
+        
+        if not place_id or not user_id:
+            raise ValueError("Both place_id and user_id are required")
+
+        # Fetch actual User and Place instances
+        place = self.place_repo.get(place_id)
+        user = self.user_repo.get(user_id)
+
+        if not place:
+            raise ValueError(f"Place with id '{place_id}' not found")
+        if not user:
+            raise ValueError(f"User with id '{user_id}' not found")
+
+        # Create Review using validated data
+        review = Review(
+            text=review_data.get('text'),
+            rating=review_data.get('rating'),
+            place=place,
+            user=user
+        )
+
+        # Save to review repo
         self.review_repo.add(review)
+
+        # Add review to place
+        place.add_review(review)
+
         return review
 
     def get_review(self, review_id):

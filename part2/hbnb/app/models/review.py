@@ -31,6 +31,6 @@ class Review(BaseModel):
 
     @rating.setter
     def rating(self, value):
-        if not isinstance(value, (int, float)) or not (1 <= value <= 5):
+        if not (value, (int, float)) or not (1 <= value <= 5):
             raise ValueError("Rating must be a number between 1 and 5")
         self._rating = float(value)
