@@ -12,10 +12,22 @@ class HBnBFacade:
         self.amenity_repo = InMemoryRepository()
 
     # Placeholder method for creating a user
-    def create_user(self, user_data):
-        user = User(**user_data)
-        self.user_repo.add(user)
-        return user
+def create_user(self, user_data: dict):
+    """
+    Create a new user, hash their password, and save them to the repository.
+    """
+    # Instantiate User model with plaintext password (constructor handles hashing)
+    user = User(
+        first_name=user_data['first_name'],
+        last_name=user_data['last_name'],
+        email=user_data['email'],
+        password=user_data['password'],  # hashed in model init
+        is_admin=user_data.get('is_admin', False)
+    )
+    # Save to repository
+    self.user_repo.add(user)
+    return user
+
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)

@@ -7,8 +7,10 @@ api = Namespace('users', description='User operations')
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Plaintext password', min_length=8)
 })
+
 
 @api.route('/')
 class UserList(Resource):
@@ -31,14 +33,15 @@ class UserList(Resource):
             return {'error': str(e)}, 400
 @api.route('/<user_id>')
 class UserResource(Resource):
+    @api.marshal_with(user_response)
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """Get user details by ID"""
+        """Get user details by ID (password excluded)"""
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'User not found'}, 404
-        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+            api.abort(404, 'User not found')
+        return user  # only fields in user_response will be serialized
     
 @api.route('/user/<user_email>')
 class UserResource(Resource):
@@ -50,3 +53,5 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+    
+    
