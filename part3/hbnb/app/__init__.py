@@ -11,6 +11,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
     bcrypt = Bcrypt()
     app.config.from_object(config_class)
+    app.config['JWT_SECRET_KEY'] = 'c999f61d1e154e16fa1f0336af0d15e12cc810f5797cb6dd6997571950802f94'
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
     jwt = JWTManager()
     jwt.init_app(app)

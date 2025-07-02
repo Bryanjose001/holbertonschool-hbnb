@@ -4,7 +4,7 @@ from flask_bcrypt import Bcrypt
 bcrypt = Bcrypt()
 
 class User(BaseModel):
- def __init__(self, first_name: str, last_name: str, email: str, is_admin: bool = False):
+    def __init__(self, first_name: str, last_name: str, email: str, is_admin: bool = False):
         super().__init__()
         if not first_name or not last_name:
             raise ValueError("must be a non-empty string")
@@ -18,25 +18,25 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
 
-def register(self):
-    #print(f"Registering user: {self.email}")
-    pass
+    def register(self):
+        #print(f"Registering user: {self.email}")
+        pass
 
-def update_profile(self):
-    #print(f"Updating profile for user: {self.email}")
-    pass
+    def update_profile(self):
+        #print(f"Updating profile for user: {self.email}")
+        pass
 
-def delete(self):
-    #print(f"Deleting user: {self.email}")
-    pass
+    def delete(self):
+        #print(f"Deleting user: {self.email}")
+        pass
 
-def hash_password(self, password: str):
-    """Hashes the password before storing it."""
-    self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    def hash_password(self, password: str):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-def verify_password(self, password: str) ->bool:
-    """Verifies if the provided password matches the hashed password."""
-    return bcrypt.check_password_hash(self.password, password)
+    def verify_password(self, password: str) ->bool:
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
 
 #def add_place(self, place):
     #if not isinstance(place, Place):

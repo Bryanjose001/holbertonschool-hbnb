@@ -1,5 +1,6 @@
 from flask_restx    import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required
 
 api = Namespace('users', description='User operations')
 
@@ -9,6 +10,12 @@ user_model = api.model('User', {
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
     'password': fields.String(required=True, description='Plaintext password', min_length=8)
+})
+user_response = api.model('UserResponse', {
+    'id': fields.String(readOnly=True, description='Unique identifier of the user'),
+    'first_name': fields.String(description='First name of the user'),
+    'last_name': fields.String(description='Last name of the user'),
+    'email': fields.String(description='Email of the user')
 })
 
 
@@ -35,6 +42,7 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.marshal_with(user_response)
     @api.response(200, 'User details retrieved successfully')
+    @jwt_required()
     @api.response(404, 'User not found')
     def get(self, user_id):
         """Get user details by ID (password excluded)"""

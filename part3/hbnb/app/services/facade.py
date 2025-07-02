@@ -12,25 +12,25 @@ class HBnBFacade:
         self.amenity_repo = InMemoryRepository()
 
     # Placeholder method for creating a user
-def create_user(self, user_data: dict):
-    """
-    Create a new user, hash their password, and save them to the repository.
-    """
-    # Instantiate User model with plaintext password (constructor handles hashing)
-    user = User(
-        first_name=user_data['first_name'],
-        last_name=user_data['last_name'],
-        email=user_data['email'],
-        password=user_data['password'],  # hashed in model init
-        is_admin=user_data.get('is_admin', False)
-    )
-    # Save to repository
-    self.user_repo.add(user)
-    return user
+    def create_user(self, user_data: dict):
+        """
+        Create a new user, hash their password, and save them to the repository.
+        """
+        # Instantiate User model with plaintext password (constructor handles hashing)
+        user = User(
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            email=user_data['email'],
+            is_admin=user_data.get('is_admin', False),
+        )
+        user.hash_password(user_data['password'])  # Ensure password is hashed
+        # Save to repository
+        self.user_repo.add(user)
+        return user
 
 
     def get_user(self, user_id):
-        return self.user_repo.get(user_id)
+            return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
@@ -99,7 +99,7 @@ def create_user(self, user_data: dict):
             setattr(place, key, value)
         self.place_repo.update(place_id, place)
         return place
-    
+
     def create_review(self, review_data):
         place_id = review_data.get('place_id')
         user_id = review_data.get('user_id')
@@ -134,10 +134,10 @@ def create_user(self, user_data: dict):
 
     def get_review(self, review_id):
         return self.review_repo.get(review_id)
-    
+
     def get_all_reviews(self):
         return self.review_repo.get_all()
-    
+
     def get_reviews_by_place(self, place_id):
         reviews = self.review_repo.get_all()
         return [review for review in reviews if review.place.id == place_id]
