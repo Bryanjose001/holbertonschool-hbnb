@@ -1,6 +1,6 @@
 from flask_restx    import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('users', description='User operations')
 
@@ -42,7 +42,6 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.marshal_with(user_response)
     @api.response(200, 'User details retrieved successfully')
-    @jwt_required()
     @api.response(404, 'User not found')
     def get(self, user_id):
         """Get user details by ID (password excluded)"""
@@ -50,6 +49,29 @@ class UserResource(Resource):
         if not user:
             api.abort(404, 'User not found')
         return user  # only fields in user_response will be serialized
+    
+    @api.expect(user_model)
+    @api.response(200, 'User updated successfully')
+    @api.response(400, 'You cannot modify email or password.')
+    @api.response(403, 'Unauthorized action.')
+    @api.response(404, 'User not found')
+    @jwt_required()
+    def put(self, user_id):
+        """Update user profile information (excluding email and password)"""
+        user_data = api.payload
+        current_user_id = get_jwt_identity()
+        #Check that user is modifying their own data
+        if current_user_id != user_id:
+            return {'error': 'Unauthorized action.'}, 403
+        #Prevent email or password modification
+        if 'email' in user_data or 'password' in user_data:
+            return {'error': 'You cannot modify email or password.'}, 400
+        #Fetch and update user
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+        updated_user = facade.update_user(user_id, user_data)
+        return {'message': 'User updated successfully'}, 200
     
 @api.route('/user/<user_email>')
 class UserResource(Resource):
@@ -61,5 +83,4 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
-    
-    
+
