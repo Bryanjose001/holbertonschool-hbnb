@@ -25,9 +25,13 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new user"""
         user_data = api.payload
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
 
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
@@ -38,6 +42,7 @@ class UserList(Resource):
             return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
         except Exception as e:
             return {'error': str(e)}, 400
+        
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.marshal_with(user_response)
@@ -59,7 +64,12 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update user profile information (excluding email and password)"""
         user_data = api.payload
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get('id')
+        #Check if current user is admin
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         #Check that user is modifying their own data
         if current_user_id != user_id:
             return {'error': 'Unauthorized action.'}, 403
