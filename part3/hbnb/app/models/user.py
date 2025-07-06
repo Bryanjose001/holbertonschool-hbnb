@@ -1,9 +1,19 @@
 from app.models.base_entity import BaseModel
 from flask_bcrypt import Bcrypt
+from app import db, bcrypt
 
 bcrypt = Bcrypt()
 
 class User(BaseModel):
+    """User model for the HBnB application."""
+    __tablename__ = 'users'
+    
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    
     def __init__(self, first_name: str, last_name: str, email: str, is_admin: bool = False):
         super().__init__()
         if not first_name or not last_name:
