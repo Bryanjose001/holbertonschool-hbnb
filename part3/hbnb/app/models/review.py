@@ -1,6 +1,20 @@
 from app.models.base_entity import BaseModel
+from app import db, bcrypt
+import uuid
+from sqlalchemy import CheckConstraint
 
 class Review(BaseModel):
+    """Review model for the HBnB application."""
+    __tablename__ = 'reviews'
+    __table_args__ = (
+        CheckConstraint('rating >= 1 AND rating <= 5', name='check_rating_range'),
+    )
+
+    text = db.Column(db.String(1024), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+    place = db.Column(db.String(36), nullable=False)
+    user = db.Column(db.String(36), nullable=False)
+    
     def __init__(self, text, rating, place, user):
         super().__init__()
         self._text = None

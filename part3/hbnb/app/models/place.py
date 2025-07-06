@@ -1,8 +1,18 @@
 from app.models.base_entity import BaseModel
 from app.models.user import User
 from app.models.review import Review
+from app import db, bcrypt
+# Place model for the HBnB application.
 
 class Place(BaseModel):
+    __tablename__ = 'places'
+    title = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(1024), nullable=True) 
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner = db.Column(db.String(36), nullable=False)
+
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
         self._title = None
