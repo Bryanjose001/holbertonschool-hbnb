@@ -2,7 +2,15 @@ from app.models.base_entity import BaseModel
 from app.models.user import User
 from app.models.review import Review
 from app import db, bcrypt
+from sqlalchemy.orm import relationship
 # Place model for the HBnB application.
+
+place_amenity = db.Table("place_amenity",
+    db.Column("place_id", db.String(36), db.ForeignKey("places.id"), primary_key=True),
+    db.Column("amenity_id", db.String(36), db.ForeignKey("amenities.id"), primary_key=True)
+)
+
+
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -12,6 +20,11 @@ class Place(BaseModel):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     owner = db.Column(db.String(36), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    user = relationship('User', backref='places', lazy=True)
+    reviews = relationship('Review', backref='place', lazy=True)
+    amenities = relationship('Amenity', secondary=place_amenity, backref='places', lazy=True)
+    
 
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
