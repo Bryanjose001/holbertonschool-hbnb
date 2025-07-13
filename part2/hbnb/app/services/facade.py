@@ -44,8 +44,7 @@ class HBnBFacade:
             return None
         for key, value in amenity_data.items():
             setattr(amenity, key, value)
-        print(vars(amenity))
-        self.amenity_repo.update(amenity_id,amenity)
+        self.amenity_repo.update(amenity_id, amenity)
         return amenity
     def create_place(self, data):
         owner_id = data.get('owner_id')
@@ -87,11 +86,11 @@ class HBnBFacade:
             setattr(place, key, value)
         self.place_repo.update(place_id, place)
         return place
-    
+
     def create_review(self, review_data):
         place_id = review_data.get('place_id')
         user_id = review_data.get('user_id')
-        
+
         if not place_id or not user_id:
             raise ValueError("Both place_id and user_id are required")
 
@@ -122,14 +121,14 @@ class HBnBFacade:
 
     def get_review(self, review_id):
         return self.review_repo.get(review_id)
-    
+
     def get_all_reviews(self):
         return self.review_repo.get_all()
-    
+
     def get_reviews_by_place(self, place_id):
         reviews = self.review_repo.get_all()
         return [review for review in reviews if review.place.id == place_id]
-        
+
     def update_review(self, review_id, review_data):
         review = self.review_repo.get(review_id)
         if not review:

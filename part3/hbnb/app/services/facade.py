@@ -1,19 +1,21 @@
+from app.persistence.amenity_repository import AmenityRepository
+from app.persistence.place_repository import PlaceRepository
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
 from app.persistence.repository import SQLAlchemyRepository
+from app.persistence.review_repositry import ReviewRepository
 from app.persistence.user_repository import UserRepository
 
 class HBnBFacade:
     def __init__(self):
         # Repositoios para otros modelos
         self.user_repo = UserRepository()  # Using UserRepository for user management
-        # Using InMemoryRepository para que sea mas simple y rapido
-        self.place_repo = SQLAlchemyRepository(Place)
-        self.review_repo = SQLAlchemyRepository(Review)
-        self.amenity_repo = SQLAlchemyRepository(Amenity)
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
+        self.amenity_repo = AmenityRepository()
 
     # Placeholder method for creating a user
     def create_user(self, user_data: dict):

@@ -1,6 +1,5 @@
 # this is a user repository for better user management
 from app.models.user import User
-from app import db
 from app.persistence.repository import SQLAlchemyRepository
 
 class UserRepository(SQLAlchemyRepository):
