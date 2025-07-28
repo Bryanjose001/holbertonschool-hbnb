@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      errorMessage.textContent = "";
+      errorMessage.textContent = "Error";
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -50,8 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json();
 
-        document.cookie = `authToken=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict; Secure`;
-        localStorage.setItem("userEmail", data.user.email);
+        document.cookie = `authToken=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict; Secure`;
         window.location.href = "index.html";
 
       } catch (error) {
@@ -114,3 +113,59 @@ function displayPlaces(places) {
 }
 
 // Add this function to handle the login link visibility
+// Simulate user authentication (later you will replace this with actual logic)
+const isLoggedIn = checkAuthentication(); // Change to true to simulate a logged-in user
+
+document.addEventListener("DOMContentLoaded", () => {
+    const addReviewSection = document.getElementById("add-review");
+
+    if (!isLoggedIn && addReviewSection) {
+        addReviewSection.classList.add("hidden");
+    }
+     // Run authentication check
+    checkAuthentication();
+});
+function checkAuthentication() {
+    const token = getCookie('authToken');
+    const loginLink = document.getElementById('login-link');
+
+    if (!token) {
+        loginLink.style.display = 'block';
+    } else {
+        loginLink.style.display = 'none';
+        // Fetch places data if the user is authenticated
+        fetchPlaces(token);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const priceFilter = document.getElementById('price-filter');
+
+    // Step 1: Populate dropdown
+    const priceOptions = [10, 50, 100, 'All'];
+    priceOptions.forEach(price => {
+        const option = document.createElement('option');
+        option.value = price;
+        option.textContent = price === 'All' ? 'All' : `$${price}`;
+        priceFilter.appendChild(option);
+    });
+
+    // Step 2: Add event listener
+    priceFilter.addEventListener('change', (event) => {
+        const selected = event.target.value;
+        const maxPrice = selected === 'All' ? Infinity : parseFloat(selected);
+        const placeCards = document.querySelectorAll('.place-card');
+
+        placeCards.forEach(card => {
+            const priceText = card.querySelector('p').textContent;
+            const match = priceText.match(/\$(\d+)/);
+            const placePrice = match ? parseFloat(match[1]) : 0;
+
+            if (placePrice <= maxPrice) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
