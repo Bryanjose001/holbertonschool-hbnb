@@ -26,14 +26,9 @@ class Place(BaseModel):
     amenities = relationship('Amenity', secondary=place_amenity, backref='amenities_places', lazy=True)
     
 
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner,user_id):
         super().__init__()
-        self._title = None
-        self._description = None
-        self._price = None
-        self._latitude = None
-        self._longitude = None
-        self._owner = None
+
 
         # Use setters to apply validation
         self.title = title
@@ -42,6 +37,7 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+        self.user_id = user_id
 
         self.reviews = []
         self.amenities = []

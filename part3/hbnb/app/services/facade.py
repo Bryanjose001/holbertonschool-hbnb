@@ -95,7 +95,8 @@ class HBnBFacade:
             price=data.get('price'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
-            owner=owner
+            owner=owner_id,
+            user_id=owner_id
         )
 
         # Step 3: Add to the place repository

@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace('places', description='Place operations')
 
@@ -41,12 +41,17 @@ class PlaceList(Resource):
         # Placeholder for logic to create a new place, including validation and persistence
         try:
             new_place = facade.create_place(place_data)
+            current_user = get_jwt_identity()  # string
+            print("Current User ID:", current_user)
+            claims = get_jwt()
+            is_admin = claims['is_admin']
+
             return {
                 'id': new_place.id,     
                 'title': new_place.title, 
                 'price': new_place.price,
                 'latitude': new_place.latitude,
-                'longitud':new_place.longitude,
+                'longitude': new_place.longitude,
                 'owner_id': current_user,
                 }, 201
         except Exception as e:
@@ -62,12 +67,7 @@ class PlaceList(Resource):
             'id': place.id,
             'title': place.title,
             'price': place.price,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
+            'owner': place.owner,
             'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in place.amenities]
         } for place in places], 200
     

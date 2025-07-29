@@ -65,7 +65,7 @@ async function fetchPlaces() {
   try {
     const token = getCookie("authToken");
 
-    const response = await fetch("http://127.0.0.1:5000/api/v1/places", {
+    const response = await fetch("http://127.0.0.1:5000/api/v1/places/", {
       headers: token
         ? {
             "Authorization": `Bearer ${token}`,
@@ -168,4 +168,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const API_ENDPOINT = "https://your-api.com/api/places"; // Replace with your actual endpoint
+
+  // Function to retrieve JWT token
+  function getJWTToken() {
+    return localStorage.getItem("authToken"); // Adjust if stored elsewhere
+  }
+
+  // Function to fetch places from API
+  async function fetchPlaces() {
+    try {
+      const token = getJWTToken();
+
+      const response = await fetch(API_ENDPOINT, {
+        method: "GET",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const places = await response.json();
+      displayPlaces(places);
+    } catch (error) {
+      console.error("Error fetching places:", error);
+      const section = document.getElementById("places-list");
+      if (section) section.innerHTML = "<p>Failed to load places.</p>";
+    }
+  }
+
+  // Call the fetch function on load
+  fetchPlaces();
 });
