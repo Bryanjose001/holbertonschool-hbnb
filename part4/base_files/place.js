@@ -157,3 +157,27 @@ router.post('/api/v1/places/:placeId/reviews', authMiddleware, async (req, res) 
 });
 
 module.exports = router;
+
+const reviewsSection = document.getElementById('reviews');
+
+// Clear old reviews (just in case)
+reviewsSection.innerHTML = '<h2>Reviews</h2>';
+
+if (place.reviews && place.reviews.length > 0) {
+    place.reviews.forEach(review => {
+        const reviewCard = document.createElement('div');
+        reviewCard.className = 'review-card';
+        reviewCard.innerHTML = `
+            <p><strong>Comment:</strong> ${review.comment}</p>
+            <p><strong>User:</strong> ${review.user}</p>
+            <p><strong>Rating:</strong> ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
+        `;
+        reviewsSection.appendChild(reviewCard);
+    });
+} else {
+    const noReview = document.createElement('p');
+    noReview.textContent = 'No reviews yet.';
+    reviewsSection.appendChild(noReview);
+}
+const response = await fetch('mock-place.json');
+const place = await response.json();
