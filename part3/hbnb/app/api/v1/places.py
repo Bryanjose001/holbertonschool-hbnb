@@ -36,15 +36,14 @@ class PlaceList(Resource):
     @jwt_required()
     def post(self):
         """Register a new place"""
-        place_data = api.payload
-        current_user = get_jwt_identity()
         # Placeholder for logic to create a new place, including validation and persistence
         try:
-            new_place = facade.create_place(place_data)
+            place_data = api.payload
             current_user = get_jwt_identity()  # string
             print("Current User ID:", current_user)
             claims = get_jwt()
             is_admin = claims['is_admin']
+            new_place = facade.create_place(place_data)
 
             return {
                 'id': new_place.id,     
@@ -91,12 +90,7 @@ class PlaceResource(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
+            'owner': place.owner,
             'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in place.amenities]
         }, 200
 

@@ -1,92 +1,69 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const placeId = getPlaceIdFromURL();
-    const token = getCookie('authToken');
+document.addEventListener('DOMContentLoaded', async () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const placeId = queryParams.get('place_id');
+
+    // Helper to get JWT token from cookies
+    function getToken() {
+        const cookieMatch = document.cookie.match('(^|;)\\s*token\\s*=\\s*([^;]+)');
+        return cookieMatch ? cookieMatch.pop() : null;
+    }
+
+    const token = getToken();
+    const isAuthenticated = !!token;
+
+    const placeDetailsSection = document.getElementById('places-list');
+    const reviewsSection = document.getElementById('reviews');
+    const addReviewSection = document.getElementById('add-review');
 
     if (!placeId) {
-        alert('No place ID found in URL!');
+        placeDetailsSection.innerHTML = '<p>Error: No place ID provided in URL.</p>';
         return;
     }
 
-    fetchPlaceDetails(placeId, token);
-    fetchReviews(placeId);
-    setupReviewForm(placeId, token);
-
-    if (!token) {
-        document.getElementById('add-review').style.display = 'none';
-    }
-});
-
-// Extract placeId from URL
-function getPlaceIdFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('placeId');
-}
-
-// Get JWT token from cookies
-function getCookie(name) {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith(name + '='));
-    return cookieValue ? cookieValue.split('=')[1] : null;
-}
-
-// Fetch and display place details
-async function fetchPlaceDetails(placeId, token) {
     try {
-        const res = await fetch(`https://api.example.com/places/${placeId}`, {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`, {
+            headers: token ? {
+                'Authorization': `Bearer ${token}`
+            } : {}
         });
 
-        if (!res.ok) throw new Error('Failed to fetch place details');
+        if (!response.ok) {
+            throw new Error('Failed to fetch place details');
+        }
 
-        const place = await res.json();
-        const placeDetails = document.getElementById('places-list');
-        placeDetails.innerHTML = `
+        const place = await response.json();
+
+        // Populate place details
+        const placeHTML = `
             <div class="place-info">
-                <h1>${place.name}</h1>
-                <p><strong>Host:</strong> ${place.host}</p>
+                <h1>name:${place.title}</h1>
                 <p><strong>Price:</strong> $${place.price}</p>
                 <p><strong>Description:</strong> ${place.description}</p>
                 <p><strong>Amenities:</strong> ${place.amenities.join(', ')}</p>
             </div>
         `;
-    } catch (err) {
-        console.error(err);
-        alert('Error loading place details.');
-    }
-}
+        placeDetailsSection.innerHTML = placeHTML;
 
-// Fetch and display reviews
-async function fetchReviews(placeId) {
-    try {
-        const res = await fetch(`https://api.example.com/places/${placeId}/reviews`);
-        if (!res.ok) throw new Error('Failed to fetch reviews');
-
-        const reviews = await res.json();
-        const reviewsSection = document.getElementById('reviews');
-        reviewsSection.innerHTML = '<h2>Reviews</h2>';
-
-        reviews.forEach(review => {
-            const reviewDiv = document.createElement('div');
-            reviewDiv.classList.add('review-card');
-            reviewDiv.innerHTML = `
+        // Populate reviews
+        /*const reviewCards = place.reviews.map(review => `
+            <div class="review-card">
                 <p><strong>Comment:</strong> ${review.comment}</p>
                 <p><strong>User:</strong> ${review.user}</p>
                 <p><strong>Rating:</strong> ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
-            `;
-            reviewsSection.appendChild(reviewDiv);
-        });
-    } catch (err) {
-        console.error(err);
+            </div>
+        `).join('');
+        reviewsSection.innerHTML += reviewCards;
+*/
+    } catch (error) {
+        console.error(error);
+        placeDetailsSection.innerHTML = `<p>Error loading place: ${error.message}</p>`;
     }
-}
 
-// Handle review form submission
-function setupReviewForm(placeId, token) {
-    const form = document.getElementById('review-form');
-    const ratingSelect = document.getElementById('rating');
+    // Toggle review form visibility
+    addReviewSection.style.display = isAuthenticated ? 'block' : 'none';
 
     // Populate rating dropdown
+    const ratingSelect = document.getElementById('rating');
     for (let i = 1; i <= 5; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -94,29 +71,89 @@ function setupReviewForm(placeId, token) {
         ratingSelect.appendChild(option);
     }
 
-    form.addEventListener('submit', async (e) => {
+    // Handle review form submission
+    const reviewForm = document.getElementById('review-form');
+    reviewForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const comment = document.getElementById('review-text').value;
+        const reviewText = document.getElementById('review-text').value;
         const rating = parseInt(document.getElementById('rating').value);
 
         try {
-            const res = await fetch(`https://api.example.com/places/${placeId}/reviews`, {
+            const res = await fetch(`https://your-api.com/api/places/${placeId}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ comment, rating })
+                body: JSON.stringify({
+                    comment: reviewText,
+                    rating: rating
+                })
             });
 
-            if (!res.ok) throw new Error('Failed to submit review');
+            if (!res.ok) {
+                throw new Error('Failed to submit review');
+            }
 
             alert('Review submitted!');
-            form.reset();
-            fetchReviews(placeId); // Refresh reviews
-        } catch (err) {
-            console.error(err);
-            alert('Error submitting review.');
+            location.reload();
+        } catch (error) {
+            alert('Error submitting review: ' + error.message);
         }
     });
-}
+});
+
+// routes/places.js
+const express = require('express');
+const router = express.Router();
+const db = require('../db'); // your database connection
+const authMiddleware = require('../middleware/auth');
+
+router.post('/api/v1/places/:placeId/reviews', authMiddleware, async (req, res) => {
+    const { placeId } = req.params;
+    const { comment, rating } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const insertReviewQuery = `
+            INSERT INTO reviews (place_id, user_id, comment, rating)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *;
+        `;
+
+        const result = await db.query(insertReviewQuery, [
+            placeId,
+            userId,
+            comment,
+            rating
+        ]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error inserting review:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+module.exports = router;
+
+const express = require('express');
+const Router = express.Router();
+const authMiddleware = require('../middleware/auth');
+const reviewModel = require('../models/reviewModel');
+
+router.post('/api/v1/places/:placeId/reviews', authMiddleware, async (req, res) => {
+    const { placeId } = req.params;
+    const { comment, rating } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const review = await reviewModel.addReview(placeId, userId, comment, rating);
+        res.status(201).json(review);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Could not add review' });
+    }
+});
+
+module.exports = router;
