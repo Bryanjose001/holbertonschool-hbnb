@@ -91,7 +91,8 @@ class PlaceResource(Resource):
             'latitude': place.latitude,
             'longitude': place.longitude,
             'owner': place.owner,
-            'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in place.amenities]
+            'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in place.amenities],
+            'reviews': [{'id': review.id, 'text': review.text, 'rating': review.rating, 'user_id': review.user.id} for review in place.reviews]
         }, 200
 
     @api.expect(place_model)

@@ -3,12 +3,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const placeId = queryParams.get('place_id');
 
     // Helper to get JWT token from cookies
-    function getToken() {
-        const cookieMatch = document.cookie.match('(^|;)\\s*token\\s*=\\s*([^;]+)');
-        return cookieMatch ? cookieMatch.pop() : null;
-    }
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+        return match ? match[2] : null;
+}
 
-    const token = getToken();
+    const token = getCookie("authToken");
+    
     const isAuthenticated = !!token;
 
     const placeDetailsSection = document.getElementById('places-list');
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const place = await response.json();
 
+        console.log('Place details:', place);
         // Populate place details
         const placeHTML = `
             <div class="place-info">
@@ -45,15 +47,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         placeDetailsSection.innerHTML = placeHTML;
 
         // Populate reviews
-        /*const reviewCards = place.reviews.map(review => `
+        const reviewCards = place.reviews.map(review => `
             <div class="review-card">
-                <p><strong>Comment:</strong> ${review.comment}</p>
-                <p><strong>User:</strong> ${review.user}</p>
+                <p><strong>Comment:</strong> ${review.text}</p>
+                <p><strong>User:</strong> ${review.user_id}</p>
                 <p><strong>Rating:</strong> ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
             </div>
         `).join('');
         reviewsSection.innerHTML += reviewCards;
-*/
     } catch (error) {
         console.error(error);
         placeDetailsSection.innerHTML = `<p>Error loading place: ${error.message}</p>`;
@@ -136,48 +137,3 @@ router.post('/api/v1/places/:placeId/reviews', authMiddleware, async (req, res) 
 });
 
 module.exports = router;
-
-const express = require('express');
-const Router = express.Router();
-const authMiddleware = require('../middleware/auth');
-const reviewModel = require('../models/reviewModel');
-
-router.post('/api/v1/places/:placeId/reviews', authMiddleware, async (req, res) => {
-    const { placeId } = req.params;
-    const { comment, rating } = req.body;
-    const userId = req.user.id;
-
-    try {
-        const review = await reviewModel.addReview(placeId, userId, comment, rating);
-        res.status(201).json(review);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Could not add review' });
-    }
-});
-
-module.exports = router;
-
-const reviewsSection = document.getElementById('reviews');
-
-// Clear old reviews (just in case)
-reviewsSection.innerHTML = '<h2>Reviews</h2>';
-
-if (place.reviews && place.reviews.length > 0) {
-    place.reviews.forEach(review => {
-        const reviewCard = document.createElement('div');
-        reviewCard.className = 'review-card';
-        reviewCard.innerHTML = `
-            <p><strong>Comment:</strong> ${review.comment}</p>
-            <p><strong>User:</strong> ${review.user}</p>
-            <p><strong>Rating:</strong> ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
-        `;
-        reviewsSection.appendChild(reviewCard);
-    });
-} else {
-    const noReview = document.createElement('p');
-    noReview.textContent = 'No reviews yet.';
-    reviewsSection.appendChild(noReview);
-}
-const response = await fetch('mock-place.json');
-const place = await response.json();

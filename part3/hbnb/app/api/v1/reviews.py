@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity , get_jwt
 
 api = Namespace('reviews', description='Review operations')
 
@@ -23,9 +23,12 @@ class ReviewList(Resource):
         review_data = api.payload
 
         try:
-            current_user = get_jwt_identity()
+            current_user = get_jwt_identity()  # string
+            print("Current User ID:", current_user)
+            claims = get_jwt()
+            is_admin = claims['is_admin']
             place = facade.get_place(review_data['place_id'])
-            if place.owner_id == current_user:
+            if place.owner == current_user:
                 return {'error': 'You cannot review your own place'}, 400
             reviews = facade.get_reviews_by_place(review_data['place_id'])
             for review in reviews:

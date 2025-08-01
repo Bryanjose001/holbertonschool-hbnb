@@ -74,10 +74,3 @@ main {
 .hidden {
   display: none;
 }
-.review-card {
-    background-color: #f7f7f7;
-    border: 1px solid #ddd;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-}
