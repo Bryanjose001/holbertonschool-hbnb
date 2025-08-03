@@ -170,4 +170,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", async () => {
+    const placesList = document.getElementById("places-list");
+    const priceFilter = document.getElementById("price-filter");
+
+    let allPlaces = [];
+
+    // Fetch all places from the API
+    async function fetchPlaces() {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/v1/places");
+            if (!response.ok) throw new Error("Failed to fetch places");
+            const data = await response.json();
+            allPlaces = data;
+            populatePriceFilter(data);
+            renderPlaces(data);
+        } catch (error) {
+            placesList.innerHTML = `<p>Error loading places: ${error.message}</p>`;
+            console.error(error);
+        }
+    }
+
+    // Render places in the DOM
+    function renderPlaces(places) {
+        if (places.length === 0) {
+            placesList.innerHTML = "<p>No places found.</p>";
+            return;
+        }
+
+        placesList.innerHTML = places.map(place => `
+            <div class="place-card">
+                <h2>${place.title}</h2>
+                <p><strong>Price:</strong> $${place.price}</p>
+                <p>${place.description}</p>
+                <a href="place.html?place_id=${place.id}">View Details</a>
+            </div>
+        `).join('');
+    }
+
+    // Populate price filter with dynamic max prices
+    function populatePriceFilter(places) {
+        const uniquePrices = [...new Set(places.map(p => p.price))].sort((a, b) => a - b);
+        
+        priceFilter.innerHTML = `
+            <option value="">-- No Filter --</option>
+            ${uniquePrices.map(price => `<option value="${price}">$${price}</option>`).join('')}
+        `;
+    }
+
+    // Filter places by selected max price
+    priceFilter.addEventListener("change", () => {
+        const selectedPrice = parseFloat(priceFilter.value);
+        if (isNaN(selectedPrice)) {
+            renderPlaces(allPlaces); // Show all if "no filter" selected
+        } else {
+            const filtered = allPlaces.filter(place => place.price <= selectedPrice);
+            renderPlaces(filtered);
+        }
+    });
+
+    // Initial fetch
+    fetchPlaces();
+});
 
